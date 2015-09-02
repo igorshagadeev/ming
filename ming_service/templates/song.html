@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+
+
+  <title>Ming song template</title>
+
+  {# Le styles -#}
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/"> return back</a>
+    
+    {% if song %}
+    <h3>song: {{song.title}} </h3>
+
+    <div class="well">
+
+    
+        <table class="table">
+            <thead>
+                <th>title</th>
+                <th>artist</th>
+                <th>genres</th>
+                <th>file_hash</th>
+                <th>fingerprints</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{song.title}}</td>
+                    <td>{{song.artist}}</td>
+                    <td>{{song.genres}}</td>
+                    <td>{{song.file_hash}}</td>
+                    <td>{{song.count_fingerprints}}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% else %}
+            <p>there are no fingerprints in db yet</p>
+            <p>u should analyze some songs - that will add fingerprints to db
+            then u can test new songs </p>
+        {% endif %}
+
+
+    </div>
+
+        <br/>
+
+    {% if song.fingerprints %}
+        {% for fp in song.fingerprints %}
+                <li>{{fp.fp_hash}}</li>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+</div>
+
+
+{#- JavaScripts are loaded at the end -#}
+
+{#- Custom JS -#}
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  
+<script type="text/javascript">
+{% block inline_js %}{% endblock %}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+
+
+  <title>Ming template</title>
+
+  {# Le styles -#}
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h3>Music Ingest and processing service </h3>
+
+    <div class="well">
+        service made with
+        Flask + SqlAlchemy + shazam fingerprinting article + stackoverflow help
+    </div>
+
+
+    <p><b>list of songs:</b></p>
+    {% if songs %}
+    <table class="table">
+        <thead>
+            <th>id</th>
+            <th>title</th>
+            <th>artist</th>
+            <th>genres</th>
+            <th>file_hash</th>
+            <th>fingerprints</th>
+        </thead>
+        <tbody>
+            {% for s in songs %}
+                <tr>
+                    <td> <a href="{{ url_for('song', song_id=s.id) }}">link to song {{s.id}}</a></td>
+                    <td>{{s.title}}</td>
+                    <td>{{s.artist}}</td>
+                    <td>{{s.genres}}</td>
+                    <td>{{s.file_hash}}</td>
+                    <td>{{s.count_fingerprints}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>there are no fingerprints in db yet</p>
+        <p>u should analyze some songs - that will add fingerprints to db
+        then u can test new songs </p>
+    {% endif %}
+
+        <br/>
+
+    <h4> analyzing info </h4>
+    <div class="well">
+        detailed fp and features :
+        type1 -  fingerprints, amount  <br/>
+        type2 - zero crossing list and z c rate <br/>
+        type3 <br/>
+        <br/>
+        <br/>
+    </div>
+
+    <h4> service api </h4>
+    <a href="#">service api </a><br/>
+
+     <br/>
+     <br/>
+    <a href="{{ url_for('add_user') }}"> add_user </a>
+
+
+    <p><b>list of users:</b></p>
+    <ul>
+    {% for u in users %}
+        <li>{{ u }} - {{ u.email}}</li>
+    {% endfor %}
+    </ul>
+
+
+
+
+    <div class="row">
+        <div class="col-lg-6">
+                upload song to database form <br/>
+                <form role="form" action="/upload" method=post enctype=multipart/form-data>
+                    <div class="input-group">
+                        <input type="file" name="file" class="form-control" id="url-box" placeholder="choose mp3 file" style="max-width: 300px;">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default">Upload</button>
+                        </span>
+                    </div>
+                </form>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+    <div class="row">
+        <div class="col-lg-6">
+                upload to search similar <br/>
+                <form role="form" action="/upload_search" method=post enctype=multipart/form-data>
+                    <div class="input-group">
+                        <input type="file" name="file" class="form-control" id="url-box" placeholder="choose mp3 file" style="max-width: 300px;">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default">Search</button>
+                        </span>
+                    </div>
+                </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div style="height:300px;weight:100%;"> </div>
+    {% block content %}{% endblock %}
+
+</div>
+
+
+{#- JavaScripts are loaded at the end -#}
+
+{#- Custom JS -#}
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  
+<script type="text/javascript">
+{% block inline_js %}{% endblock %}
+</script>
+
+</body>
+</html>
