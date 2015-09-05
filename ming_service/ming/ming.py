@@ -162,23 +162,26 @@ class Ming(object):
 
     def extract_tags(self, filepath):
         """
-        extract tags from file
+        extract tags from mp3 file
         """
-        import eyed3
+        try:
+            import eyed3
 
+            audiofile = eyed3.load(filepath)
 
-        audiofile = eyed3.load(filepath)
+            artist = audiofile.tag.artist
+            title = audiofile.tag.title
+            genre = audiofile.tag.genre
 
-        artist = audiofile.tag.artist
-        title = audiofile.tag.title
-        genre = audiofile.tag.genre
+            if genre:
+                genre_name = genre.name
+            else:
+                genre_name = None
 
-        if genre:
-            genre_name = genre.name
-        else:
-            genre_name = None
+            return (artist, title, genre_name)
 
-        return (artist, title, genre_name)
+        except AttributeError:
+            return ('only mp3','only mp3','only mp3')
 
     def get_text(self, artist, title):
         """
@@ -274,11 +277,13 @@ class Ming(object):
     def compare_file(self, filepath, max_common=10):
         """
         process file to fingerprints and search in database
-        similar, setting treshold to 1% ?
+        for similar, setting treshold to 1% ?
         """
-
+        print filepath
         # check file format and use appropriate handler
         file_format = filepath.split('.')[-1]
+        if not file_format:
+            file_format = 'mp3'
         handler = formatHandlerFactory.get_handler(file_format)
 
         # get tags

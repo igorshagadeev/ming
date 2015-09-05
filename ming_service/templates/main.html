@@ -10,7 +10,11 @@
   <title>Ming template</title>
 
   {# Le styles -#}
-
+    <style>
+        .label {
+            font-size:0.9em;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,7 +29,7 @@
     </div>
 
 
-    <p><b>list of songs:</b></p>
+    <span class="label label-info"><b>list of songs:</b></span>
     {% if songs %}
     <table class="table">
         <thead>
@@ -57,7 +61,7 @@
 
         <br/>
 
-    <h4> analyzing info </h4>
+    <span class="label label-info"><b> analyzing info </b></span>
     <div class="well">
         detailed fp and features :
         type1 -  fingerprints, amount  <br/>
@@ -67,24 +71,19 @@
         <br/>
     </div>
 
-    <h4> service api </h4>
-    <a href="#">service api </a><br/>
+   <!-- <span class="label label-info"><b> service api </b></span>
+    <a href="#">service api </a><br/>-->
 
-     <br/>
-     <br/>
-    <a href="{{ url_for('add_user') }}"> add_user </a>
-
-
-    <p><b>list of users:</b></p>
-    <ul>
-    {% for u in users %}
-        <li>{{ u }} - {{ u.email}}</li>
-    {% endfor %}
-    </ul>
+    <br/>
+    <br/>
 
 
 
 
+
+    <span class="label label-info"> upload and search files </span>
+    <span class="label label-warning">Only with extensions {{extensions}}</span>
+    <br/> <br/>
     <div class="row">
         <div class="col-lg-6">
                 upload song to database form <br/>
@@ -98,9 +97,6 @@
                 </form>
         </div>
     </div>
-
-    <br/>
-    <br/>
 
     <div class="row">
         <div class="col-lg-6">
@@ -132,6 +128,17 @@
 
     <div style="height:300px;weight:100%;"> </div>
     {% block content %}{% endblock %}
+
+    <span class="label label-info"><b>list of users:</b></span>
+    <div>
+        <a href="{{ url_for('add_user') }}"> add_user </a>
+
+        <ul>
+            {% for u in users %}
+                <li>{{ u }} - {{ u.email}}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
 </div>
 

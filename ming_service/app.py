@@ -24,15 +24,12 @@ from tools import database_exists
 
 from models import User, Song, Fingerprint
 
+import tempfile
 import random
 import os
 
 from ming.ming import Ming
-
-
-
-#TODO
-# import setting to project
+from settings import EXTENSIONS, UPLOAD_FOLDER
 
 
 
@@ -51,7 +48,7 @@ def hello():
     users = User.query.all()
     songs = Song.query.all()
 
-    return render_template('main.html', users = users, songs = songs)
+    return render_template('main.html', users = users, songs = songs, extensions = EXTENSIONS)
 
 
 
@@ -67,22 +64,43 @@ def song(song_id):
 
 
 
-UPLOAD_FOLDER = '/tmp/'
-ALLOWED_EXTENSIONS = set(['mp3'])
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = set(EXTENSIONS)
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+
 
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-
+    """
+    upload file to temporary, thend send to ming to process it
+    and save features to database
+    """
     f = request.files['file']
+    if not (f and allowed_file(f.filename)):
+        return redirect(url_for('hello'))
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+    if UPLOAD_FOLDER:
+        filepath = os.path.join(UPLOAD_FOLDER, secure_filename(f.filename))
+    else:
+        extension = secure_filename(f.filename).split('.')[-1]
+        temp = tempfile.NamedTemporaryFile(suffix = '.'+extension)
+        filepath = temp.name
+
     print filepath
     f.save(filepath)
 
     result = process_file(filepath)
+
+    try:
+        f.close()
+        temp.close()
+    except:
+        print 'cant delete'
 
     return result
 
@@ -90,38 +108,39 @@ def upload_file():
 
 @app.route('/upload_search', methods=['POST'])
 def upload_search():
+    """
+    upload file to temporary, thend send to ming to process it
+    and compare to features in database
 
+    return Counter object [(song1.id, N finds),(song2.id, M finds),]
+    """
     f = request.files['file']
+    if not (f and allowed_file(f.filename)):
+        return redirect(url_for('hello'))
+    
+    if UPLOAD_FOLDER:
+        filepath = os.path.join(UPLOAD_FOLDER, secure_filename(f.filename))
+    else:
+        extension = secure_filename(f.filename).split('.')[-1]
+        temp = tempfile.NamedTemporaryFile(suffix = '.'+extension)
+        filepath = temp.name
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
     print filepath
     f.save(filepath)
 
     result = compare_file(filepath)
+
+    try:
+        f.close()
+        temp.close()
+    except:
+        print 'cant delete'
 
     return result
 
 
 
 
-#TODO
-################################
-#
-#   flask views grab form db module
-#        - grab list of songs
-#
-################################
-#
-#   views send to processing service
-#       process_file - send file to processing
-#
-################################
-
-
-
-#TODO
-# write def to processing service
-# deal with uploaded file
 def process_file(filepath):
 
     m = Ming()
