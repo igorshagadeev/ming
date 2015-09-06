@@ -17,3 +17,8 @@ go to ming_service
 start flask monitor and querying
 
     $ python app.py
+
+tests:
+in ming_service dir run command
+
+    $ python -m unittest discover

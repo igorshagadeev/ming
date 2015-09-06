@@ -89,7 +89,7 @@ class mp3Handler(fileformatHandler):
 
 
 
-HANDLERS = {'mp3':mp3Handler,}
+HANDLERS = {'.mp3':mp3Handler,}
 
 
 
@@ -232,8 +232,9 @@ class Ming(object):
         """
 
         # check file format and use appropriate handler
-        file_format = filepath.split('.')[-1]
-        handler = formatHandlerFactory.get_handler(file_format)
+        #file_format = filepath.split('.')[-1]
+        filename, file_extension = os.path.splitext(filepath)
+        handler = formatHandlerFactory.get_handler(file_extension)
 
         # get file_hash to not process the same file
         file_hash = unique_hash(filepath)
@@ -270,7 +271,7 @@ class Ming(object):
         process all files to fingerprints and store them in database
         """
         # 
-        for file_path in grab_files(dirpath, extensions = ('.mp3',)):
+        for file_path in grab_files(dirpath):
             print file_path
             self.fingerprint_file(file_path)
 
@@ -281,10 +282,11 @@ class Ming(object):
         """
         print filepath
         # check file format and use appropriate handler
-        file_format = filepath.split('.')[-1]
-        if not file_format:
-            file_format = 'mp3'
-        handler = formatHandlerFactory.get_handler(file_format)
+        #file_format = filepath.split('.')[-1]
+        filename, file_extension = os.path.splitext(filepath)
+        if not file_extension:
+            file_extension = '.mp3'
+        handler = formatHandlerFactory.get_handler(file_extension)
 
         # get tags
         artist, title, genre = self.extract_tags(filepath)

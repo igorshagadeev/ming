@@ -13,6 +13,8 @@ def grab_files(dirpath, extensions=None):
     """
     if not extensions:
         extensions = EXTENSIONS
+        print 'looking for ', extensions, ' extensions in ', dirpath
+
     for name in os.listdir(dirpath):
         full_path = os.path.join(dirpath, name)
         if os.path.isdir(full_path):
