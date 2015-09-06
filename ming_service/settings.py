@@ -17,7 +17,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # extensions list to analyse
 # check that holder for each extension defined (test)
 # flask use this to filter uploaded files
-EXTENSIONS = ['.mp3',]
+EXTENSIONS = ('.mp3',)
 
 # upload dir for flask service
 # if None uses NamedTemporary file by default with .mp3 extension

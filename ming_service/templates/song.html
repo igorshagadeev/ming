@@ -55,6 +55,7 @@
         <br/>
 
     {% if song.fingerprints %}
+        <span> fingerprints list  </span>
         {% for fp in song.fingerprints %}
                 <li>{{fp.fp_hash}}</li>
         {% endfor %}

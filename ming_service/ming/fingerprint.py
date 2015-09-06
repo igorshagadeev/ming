@@ -76,7 +76,7 @@ def read_wav_file(filepath):
 
 
 
-def process_file(rate, data, original=False, vizualize=False):
+def process_file(rate, data, original=None, vizualize=False):
     """
     prepare fingerprints
     """
@@ -103,7 +103,7 @@ def process_file(rate, data, original=False, vizualize=False):
     arr2D[arr2D == -np.inf] = 0  # replace infs with zeros
 
     # find local maxima
-    local_maxima = get_2D_peaks(arr2D, plot=True, amp_min=DEFAULT_AMP_MIN)
+    local_maxima = get_2D_peaks(arr2D, visualize=vizualize, amp_min=DEFAULT_AMP_MIN)
     result = set()
 
     # get hashes from peaks
@@ -129,7 +129,7 @@ def process_file(rate, data, original=False, vizualize=False):
 
 
 
-def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
+def get_2D_peaks(arr2D, visualize=False, amp_min=DEFAULT_AMP_MIN):
     """
     extract peaks from spectrogram
     ###########################################################################
@@ -187,7 +187,7 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
     frequency_idx = [x[1] for x in peaks_filtered]
     time_idx = [x[0] for x in peaks_filtered]
 
-    if plot:
+    if visualize:
         # scatter of the peaks
         fig, ax = plt.subplots()
         ax.imshow(arr2D)
@@ -196,9 +196,10 @@ def get_2D_peaks(arr2D, plot=False, amp_min=DEFAULT_AMP_MIN):
         ax.set_ylabel('Frequency')
         ax.set_title("Spectrogram")
         plt.gca().invert_yaxis()
-        #plt.show()
 
-        plt.savefig('foo.png')
+        # save or show
+        plt.show()
+        #plt.savefig('fingerprints.png')
 
     return zip(frequency_idx, time_idx)
 
@@ -233,7 +234,7 @@ def generate_hashes(peaks, fan_value=DEFAULT_FAN_VALUE):
 
 
 
-def zcr(rate, data, original_filename):
+def zcr(rate, data, original_filename, visualize=False):
     """Computes zero crossing rate of frame"""
 
     zero_crossings = 0
@@ -253,19 +254,23 @@ def zcr(rate, data, original_filename):
     print 'zero_crossing_rate', zero_crossing_rate
 
 
-    #subplot(211)
-    #plot(range(len(data)), data)
+    if visualize:
+        #plt.clf()
+        plt.subplot(211)
+        plt.plot(range(len(data)), data)
 
-    #subplot(212)
-    plt.clf()
-    plt.plot(range(len(zero_cross)), zero_cross)
-    plt.savefig(original_filename + 'zcr.png')
-    #show()
+        subplot(212)
+        plt.plot(range(len(zero_cross)), zero_cross)
 
-    import pickle
-    file_res = open(original_filename + '_zc', 'w')
-    pickle.dump(zero_cross, file_res)
-    file_res.close()
+        # save or show
+        #plt.savefig(original_filename + 'zcr.png')
+        show()
+
+        #### save to pickle
+        #import pickle
+        #file_res = open(original_filename + '_zc', 'w')
+        #pickle.dump(zero_cross, file_res)
+        #file_res.close()
 
     return zero_crossing_rate
 
@@ -275,50 +280,44 @@ def zcr(rate, data, original_filename):
 
 
 
+if __name__ == '__main__':
 
-#example
+    """
+    result .png files save to the same with file dir
+    calculating zcr takes some time ~10sec afte closing visualized graphs
 
-#######################################################
-#process through temporary file
+    """
+    #TODO
+    # retrieve file from data storage (via api?)
 
-#TODO
-# handle all in-memory
-# retrieve file from data storage (via api?)
-# store file
-# convert to make temp wav file
+    import tempfile
+    import commands
+    import os
 
-import tempfile
-import commands
-import os
+    def example(filename_mp3):
 
-def example(filename_mp3):
+        temp = tempfile.NamedTemporaryFile()
+        try:
+            print 'temp:', temp
+            print 'temp.name:', temp.name
+            os.system("mpg123 --wav " + temp.name + " --8bit --rate 8000 --mono " + filename_mp3)
 
-    temp = tempfile.NamedTemporaryFile()
-    try:
-        print 'temp:', temp
-        print 'temp.name:', temp.name
-        os.system("mpg123 --wav " + temp.name + " --8bit --rate 8000 --mono " + filename_mp3)
+            #emulate mp3_handler read
+            rate, data = read_wav_file(temp.name)
 
-        #emulate mp3_handler read
-        rate, data = read_wav_file(filepath)
+            #get fingerprints
+            process_file(rate, data, filename_mp3, vizualize=True)
 
-        #get fingerprints
-        process_file(rate, data, filename_mp3)
-
-        #get zero crossing rate
-        zcr(rate, data, original)
+            #get zero crossing rate
+            zcr(rate, data, filename_mp3, visualize=True)
 
 
-    finally:
-        # Automatically cleans up the file
-        temp.close()
+        finally:
+            # Automatically cleans up the file
+            temp.close()
 
-
-
-
-
-
-#example(filename_mp3):
+    filename_mp3 = '../../fixtures/white_america_526.mp3'
+    example(filename_mp3)
 
 
 

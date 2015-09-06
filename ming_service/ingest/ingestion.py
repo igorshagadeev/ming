@@ -5,14 +5,14 @@ ingestion module
 """
 
 import os
-
+from settings import EXTENSIONS
 
 def grab_files(dirpath, extensions=None):
     """
     generator returning all files in dir with certain extensions e.g. ('.mp3',)
     """
     if not extensions:
-        extensions = ('.mp3',)
+        extensions = EXTENSIONS
     for name in os.listdir(dirpath):
         full_path = os.path.join(dirpath, name)
         if os.path.isdir(full_path):
